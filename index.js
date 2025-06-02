@@ -173,9 +173,7 @@ async function main() {
             realNameScore = await analyzer.transformUserIdToName(scores);
         }
 
-        const scoresMap = analyzer.calculateScores();
-
-        let filteredScores = scoresMap;
+        let filteredScores = scores;
 
         if (options.threshold !== undefined) {
             filteredScores = Array.from(filteredScores).map(([repo, scoreList]) => {
@@ -185,7 +183,7 @@ async function main() {
         }
 
        if (options.user) {
-            const allScoresRaw = Array.from(scoresMap.entries()); // [repoName, [[user1], ...]]
+            const allScoresRaw = Array.from(scores.entries()); // Use scores instead of scoresMap
             const userScores = new Map(); // username → { total: number, perRepo: Map }
 
             for (const [repoName, users] of allScoresRaw) {
@@ -247,13 +245,13 @@ async function main() {
         }
         
 
-        const averageScores = analyzer.calculateAverageScore(scoresMap);
+        const averageScores = analyzer.calculateAverageScore(scores); // Use scores instead of scoresMap
         await fs.mkdir(options.output, { recursive: true });
         log(`총 ${program.args.length}개의 저장소 분석을 시작합니다.`, 'INFO');
 
         let totalEntry = null; // total 저장소 따로 저장
 
-        for (const [repoName, scoreData] of scoresMap.entries()) {
+        for (const [repoName, scoreData] of scores.entries()) { // Use scores instead of scoresMap
             if (repoName === 'total') {
                 totalEntry = { repoName, scoreData };
                 continue; // total은 나중에 따로 처리
